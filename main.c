@@ -1,38 +1,34 @@
-#include "monty.h"
+#include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
- * main - main function
- * @argc: arguments count
- * @argv: arguments traverse (file path expected)
- * Return: 0 always - success!
+ * main - The entry point of the program
+ * @argc: The argument count
+ * @argv: The argument array
+ *
+ * Return: 0 on Success
  */
-
 int main(int argc, char **argv)
 {
-	trave_t *traverse = NULL;
-	size_t n;
-	void (*execute)(stack_t **stack, unsigned int line_number);
+	FILE *fp = -1;
 
 	if (argc != 2)
-		_error(ERROR_USAGE_FILE);
-
-	built_in();
-	traverse->filename = argv[1];
-	traverse->file = fopen(traverse->filename, "r");
-
-	if (traverse->file == NULL)
-		_error(ERROR_OPEN_FILE);
-	while (getline(&traverse->line, &n, traverse->file) > 0)
 	{
-		traverse->line_num++;
-
-		if (_parse(traverse->line) == EXIT_FAILURE)
-			continue;
-
-		execute = _opcode();
-		execute(&traverse->stack, traverse->line_num);
+		perror("USAGE: monty file\n");
+		exit(EXIT_FAILURE);
 	}
-	free(traverse);
-	_free();
-	return (EXIT_SUCCESS);
+
+	fp = fopen(argv[1], "r");
+	if (fp == NULL)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't open file %s\n", arg[1]);
+		exit(EXIT_FAILURE);
+	}
+
+	exec_bytecodes(fp);
+
+	fclose(fp);
+
+	return (0);
 }

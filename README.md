@@ -1,7 +1,1 @@
-# monty test
-Abdel lsls
-more..
-
-more.......
-
-    git submodule update --remote
+#0x19. C - Stacks, Queues - LIFO, FIFO
