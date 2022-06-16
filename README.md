@@ -1,1 +1,3 @@
-#0x19. C - Stacks, Queues - LIFO, FIFO
+# 1 project alx
+# monty
+# C - Stacks, Queues - LIFO, FIFO tasks
