@@ -1,74 +1,41 @@
 #include "monty.h"
 
-extra_t tren = {NULL, NULL, 0, "stack"};
+vars_t *element;
+
 /**
- * main - entry point
- * @argc: argument count
- * @argv: argument value
- *
- * Return: 0 or exit error
- */
+  * main - Entry Point
+  * @argc: Number of arguments
+  * @argv: Arguments names
+  * Return: 0 on success, exit on failures
+  */
 int main(int argc, char **argv)
 {
-	int num_letters, j, i;
-	char tmp[1000];
-	stack_t *head;
-	unsigned int line = 1;
+	size_t n = 0;
+	vars_t temp = {0, NULL, NULL, NULL, NULL, NULL, 1};
 
-	tren.buf = malloc(sizeof(char) * 100024);
-	if (tren.buf == NULL)
-	{
-		fprintf(stderr, "Error: malloc failed\n");
-		exit(EXIT_FAILURE);
-	}
-
-	for (i = 0; i <= 100023; i++)
-		tren.buf[i] = '\0';
-
-	head = NULL;
-	errors(argc, argv);
-
-	num_letters = read(tren.fd, tren.buf, sizeof(char) * 100024);
-	if (num_letters == -1)
-	{
-		free(tren.buf);
-		return (0); }
-	j = 0;
-	while (tren.buf[j] != '\0')
-	{
-		i = 0;
-		for (; tren.buf[j] != '\n' && tren.buf[j] != '\0'; j++, i++)
-			tmp[i] = tren.buf[j];
-		tmp[i] = '\0';
-		if (tmp[0] != '\0' && tmp[0] != '\n')
-		{
-			exec_comp(tmp, &head, line); }
-		line++;
-		j++; }
-	close(tren.fd);
-	free_dlistint(head);
-	free(tren.buf);
-	return (0);
-}
-
-/**
- * errors - handle errors in main
- * @argc: argument count
- * @argv: argument value
- *
- * Return: 0 or exit error
- */
-void errors(int argc, char **argv)
-{
+	element = &temp;
+	element->fname = argv[1];
 	if (argc != 2)
+		exit_function(16);
+
+	element->fp = fopen(argv[1], "r");
+	if (element->fp == NULL)
+		exit_function(1);
+
+	for (; getline(&(element->buf), &n, element->fp) != EOF;
+		element->line_number++)
 	{
-		fprintf(stderr, "USAGE: monty file\n");
-		free(tren.buf);
-		exit(EXIT_FAILURE); }
-	tren.fd = open(argv[1], O_RDONLY);
-	if (!argv[1] || tren.fd == -1)
-	{
-		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-		free(tren.buf);
-		exit(EXIT_FAILURE); }
+		element->tokened = malloc(sizeof(char *) * 2);
+		if (element->tokened == NULL)
+			exit_function(3);
+		get_tokens(element->buf);
+		opcode_search();
+		free_buffer();
+		free_token();
+	}
+	free_buffer();
+	free_list(element->head);
+	free_token();
+	fclose(element->fp);
+	return (0);
 }
